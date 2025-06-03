@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Cropper from 'react-easy-crop'
 import { getImage } from './functions/buffer'
 
@@ -11,14 +11,16 @@ function App() {
   const [url, setUrl] = useState('')
   const [image, setImage] = useState('')
 
-  useCallback(async () => {
-    if (url) {
-      const imageLoaded = await getImage(url)
-      setImage(imageLoaded)
-    }
-  }, [url])
+  useEffect(() => {}, [image])
 
   const onCropComplete = (croppedArea, croppedAreaPixels) => {
+  }
+
+  const onSubmit = async (e: any) => {
+    e.preventDefault()
+    
+    const imageLoaded = await getImage(url)
+    setImage(imageLoaded)
   }
 
   return (
@@ -35,12 +37,15 @@ function App() {
             image={image}
           />
         ) : (
-          <input
-            type="text"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            placeholder="Enter image URL"
-          />
+          <>
+            <input
+              type="text"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              placeholder="Enter image URL"
+            />
+            <button type="submit" onClick={onSubmit}>Buscar</button>
+          </>
         )
       }
     </>
