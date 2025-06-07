@@ -1,5 +1,4 @@
 import type { Area } from "react-easy-crop"
-import type { ImageType } from "../types/image-type"
 
 const createImage = (url: string): Promise<HTMLImageElement> =>
 	new Promise((resolve, reject) => {
@@ -9,12 +8,12 @@ const createImage = (url: string): Promise<HTMLImageElement> =>
 		image.src = url
 	})
 
-export default async function getCroppedImg(imageSrc: string, pixelCrop: Area, imageType: ImageType) {
+export default async function getCroppedImg(imageSrc: string, pixelCrop: Area) {
 	const image = await createImage(imageSrc)
 	const canvas = document.createElement("canvas")
 	const ctx: CanvasRenderingContext2D | null = canvas.getContext("2d")
 
-	const outputRatio = imageType === "PRODUCT" ? 200 : 140
+	const outputRatio = 200
 	canvas.width = outputRatio
 	canvas.height = outputRatio
 
@@ -33,13 +32,13 @@ export default async function getCroppedImg(imageSrc: string, pixelCrop: Area, i
 	return canvas
 }
 
-export const generateDownload = async (imageSrc: string, crop: Area, imageType: ImageType) => {
+export const generateDownload = async (imageSrc: string, crop: Area) => {
 	console.log("generateDownload", imageSrc, crop)
     if (!crop || !imageSrc) {
 		return
 	}
 
-	const canvas = await getCroppedImg(imageSrc, crop, imageType)
+	const canvas = await getCroppedImg(imageSrc, crop)
 
 	canvas.toBlob(
 		(blob) => {

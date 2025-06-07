@@ -1,37 +1,35 @@
-import { useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { Point, Area } from 'react-easy-crop'
 import Cropper from 'react-easy-crop'
 
 import { generateDownload } from './functions/crop-image'
 
 import './App.css'
+import { fetchImage } from './functions/load-image'
 
 function App() {
   const [image, setImage] = useState<string>('')
+  const [url, setUrl] = useState<string>('')
+
   const [crop, setCrop] = useState<Point>({ x: 0, y: 0 })
   const [zoom, setZoom] = useState(1)
   const [croppedArea, setCroppedArea] = useState<Area>(null as unknown as Area)
 
-  const inputRef = useRef<HTMLInputElement>(null)
-
-  const onSelectFile = (event) => {
-		if (event.target.files && event.target.files.length > 0) {
-			const reader = new FileReader();
-			reader.readAsDataURL(event.target.files[0]);
-			reader.addEventListener("load", () => {
-				setImage(reader.result as string);
-			});
-		}
-  }	
+  const handleUrlChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setUrl(event.target.value);
+  }
   
-  const triggerFileSelectPopup = () => inputRef.current?.click();
+  const onLoadImage = async () => {
+    const image = await fetchImage(url)
+    setImage(image)
+  }
 
   const onCropComplete = (_: any, croppedAreaPixels: Area) => {
     setCroppedArea(croppedAreaPixels);
   }
 
   const onDownload = async () => {
-    await generateDownload(image, croppedArea, "PRODUCT")
+    await generateDownload(image, croppedArea)
   }
 
   return (
@@ -55,16 +53,11 @@ function App() {
           ) : null
         }
 
-        <div className="container-buttons">
-          <input
-            type='file'
-            accept='image/*'
-            ref={inputRef}
-            onChange={onSelectFile}
-            style={{ display: 'none' }}  
-          />
-          <button onClick={triggerFileSelectPopup}>Select Image</button>
-          <button onClick={onDownload}>Download</button>
+        <div className="container-controls">
+          <input className="input" type="text" placeholder="URL da imagem" onChange={handleUrlChange} />
+          <button className="btn" onClick={onLoadImage}>Carregar Imagem</button>
+
+          <button className="btn btn-download" onClick={onDownload} disabled={!image}>Download</button>
         </div>
       </div>
     </div>
