@@ -13,7 +13,7 @@ export default async function getCroppedImg(imageSrc: string, pixelCrop: Area) {
 	const canvas = document.createElement("canvas")
 	const ctx: CanvasRenderingContext2D | null = canvas.getContext("2d")
 
-	const outputRatio = 200
+	const outputRatio = 140
 	canvas.width = outputRatio
 	canvas.height = outputRatio
 
